@@ -53,6 +53,11 @@ class mongodb::params {
     default => 'root',
   }
 
+  $config_file_init = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/ => '/etc/default/mongodb',
+    default                   => '/etc/sysconfig/mongod',
+  }
+
   $port = '27017'
   $protocol = 'tcp'
 
@@ -68,6 +73,8 @@ class mongodb::params {
   $absent = false
   $disable = false
   $disableboot = false
+  $config_file_init_source = ''
+  $config_file_init_template = ''
 
   ### General module variables that can have a site or per module default
   $monitor = false

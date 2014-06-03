@@ -36,6 +36,22 @@ class mongodb::server {
     noop    => $mongodb::noops,
   }
 
+  if ($mongodb::config_file_init_source or $mongodb::config_file_init_template) {
+    file { 'mongodb.init.conf':
+      ensure  => $mongodb::manage_file,
+      path    => $mongodb::config_file_init,
+      mode    => $mongodb::config_file_mode,
+      owner   => $mongodb::config_file_owner,
+      group   => $mongodb::config_file_group,
+      require => Package['mongodb'],
+      source  => $mongodb::manage_config_file_init_source,
+      content => $mongodb::manage_config_file_init_template,
+      replace => $mongodb::manage_file_replace,
+      audit   => $mongodb::manage_audit,
+      noop    => $mongodb::noops,
+    }
+  }
+
   ### Provide puppi data, if enabled ( puppi => true )
   if $mongodb::bool_puppi == true {
     $classvars=get_class_args()

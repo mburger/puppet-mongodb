@@ -259,6 +259,9 @@ class mongodb (
   $config_file_mode      = params_lookup( 'config_file_mode' ),
   $config_file_owner     = params_lookup( 'config_file_owner' ),
   $config_file_group     = params_lookup( 'config_file_group' ),
+  $config_file_init           = params_lookup( 'config_file_init' ),
+  $config_file_init_source    = params_lookup( 'config_file_init_source'),
+  $config_file_init_template  = params_lookup( 'config_file_init_template' ),
   $pid_file              = params_lookup( 'pid_file' ),
   $data_dir              = params_lookup( 'data_dir' ),
   $log_dir               = params_lookup( 'log_dir' ),
@@ -345,7 +348,7 @@ class mongodb (
     ''      => $mongodb::bool_use_10gen ? {
       true  => $::operatingsystem ? {
         /(?i:Debian|Ubuntu|Mint)/ => 'mongodb-10gen',
-        default                   => 'mongo-10gen-server',
+        default                   => 'mongodb-org-server',
       },
       false => 'mongodb-server'
     },
@@ -356,7 +359,7 @@ class mongodb (
     ''      => $mongodb::bool_use_10gen ? {
       true  => $::operatingsystem ? {
         /(?i:Debian|Ubuntu|Mint)/ => undef,
-        default                   => [ 'mongo-10gen' ],
+        default                   => [ 'mongodb-org' ],
       },
       false => $::operatingsystem ? {
         /(?i:Debian|Ubuntu|Mint)/ => [ 'mongodb-clients' ],
@@ -468,6 +471,16 @@ class mongodb (
   $manage_file_content = $mongodb::template ? {
     ''        => undef,
     default   => template($mongodb::template),
+  }
+
+  $manage_config_file_init_source = $mongodb::config_file_init_source ? {
+    ''        => undef,
+    default   => $mongodb::config_file_init_source,
+  }
+
+  $manage_config_file_init_template = $mongodb::config_file_init_template ? {
+    ''        => undef,
+    default   => template($mongodb::config_file_init_template),
   }
 
   $package_require = $mongodb::dependency_class ? {
